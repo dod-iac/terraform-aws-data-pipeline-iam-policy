@@ -195,6 +195,22 @@ data "aws_iam_policy_document" "main" {
     }
   }
 
+  #
+  # GitPull
+  #
+
+  dynamic "statement" {
+    for_each = length(var.codecommit_repos_pull) > 0 ? [1] : []
+    content {
+      sid = "GitPull"
+      actions = [
+        "codecommit:GitPull",
+      ]
+      effect    = "Allow"
+      resources = var.codecommit_repos_pull
+    }
+  }
+
 }
 
 resource "aws_iam_policy" "main" {

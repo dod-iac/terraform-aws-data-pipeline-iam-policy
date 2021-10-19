@@ -1,3 +1,9 @@
+variable "codecommit_repos_pull" {
+  type        = list(string)
+  description = "The ARNs of the AWS CodeCommit repos that can be pulled.  Use [\"*\"] to allow all repos."
+  default     = []
+}
+
 variable "description" {
   type        = string
   description = "The description of the AWS IAM policy.  Defaults to \"The policy for [NAME].\""

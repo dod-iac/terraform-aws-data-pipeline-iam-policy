@@ -13,15 +13,15 @@
  */
 
 module "s3_kms_key" {
- source  = "dod-iac/s3-kms-key/aws"
- version = "1.0.1"
+  source  = "dod-iac/s3-kms-key/aws"
+  version = "1.0.1"
 
- name        = format("alias/test-%s", var.test_name)
- description = format("A KMS key used to encrypt objects at rest for %s.", var.test_name)
+  name        = format("alias/test-%s", var.test_name)
+  description = format("A KMS key used to encrypt objects at rest for %s.", var.test_name)
 
- principals = ["*"]
+  principals = ["*"]
 
- tags = var.tags
+  tags = var.tags
 }
 
 module "s3_bucket_source" {
@@ -29,8 +29,8 @@ module "s3_bucket_source" {
   version = "1.0.1"
 
   kms_master_key_id = module.s3_kms_key.aws_kms_key_arn
-  name = format("test-src-%s", var.test_name)
-  tags = var.tags
+  name              = format("test-src-%s", var.test_name)
+  tags              = var.tags
 }
 
 module "s3_bucket_destination" {
@@ -38,8 +38,8 @@ module "s3_bucket_destination" {
   version = "1.0.1"
 
   kms_master_key_id = module.s3_kms_key.aws_kms_key_arn
-  name = format("test-dst-%s", var.test_name)
-  tags = var.tags
+  name              = format("test-dst-%s", var.test_name)
+  tags              = var.tags
 }
 
 module "ecs_task_role_iam_policy" {
@@ -48,7 +48,7 @@ module "ecs_task_role_iam_policy" {
   kms_keys_decrypt = [module.s3_kms_key.aws_kms_key_arn]
   kms_keys_encrypt = [module.s3_kms_key.aws_kms_key_arn]
 
-  s3_buckets_read = [module.s3_bucket_source.arn]
+  s3_buckets_read  = [module.s3_bucket_source.arn]
   s3_buckets_write = [module.s3_bucket_destination.arn]
 
   name = format("test-ecs-task-role-%s", var.test_name)
