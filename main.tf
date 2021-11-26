@@ -211,6 +211,77 @@ data "aws_iam_policy_document" "main" {
     }
   }
 
+  #
+  # GitPush
+  #
+
+  dynamic "statement" {
+    for_each = length(var.codecommit_repos_push) > 0 ? [1] : []
+    content {
+      sid = "GitPush"
+      actions = [
+        "codecommit:GitPush",
+      ]
+      effect    = "Allow"
+      resources = var.codecommit_repos_push
+    }
+  }
+
+  #
+  # GetAuthorizationToken
+  #
+
+  dynamic "statement" {
+    for_each = length(distinct(flatten([var.ecr_repos_read, var.ecr_repos_write]))) > 0 ? [1] : []
+    content {
+      sid = "GetAuthorizationToken"
+      actions = [
+        "ecr:GetAuthorizationToken"
+      ]
+      resources = ["*"]
+    }
+  }
+
+  #
+  # GetImage
+  #
+
+  dynamic "statement" {
+    for_each = length(distinct(flatten([var.ecr_repos_read, var.ecr_repos_write]))) > 0 ? [1] : []
+    content {
+      sid = "GetImage"
+      actions = [
+        "ecr:ListImages",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:BatchGetImage",
+      ]
+      resources = distinct(flatten([var.ecr_repos_read, var.ecr_repos_write]))
+    }
+  }
+
+  #
+  # PutImage
+  #
+
+  dynamic "statement" {
+    for_each = length(var.ecr_repos_write) > 0 ? [1] : []
+    content {
+      sid = "PutImage"
+      actions = [
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:PutImage"
+      ]
+      resources = var.ecr_repos_write
+    }
+  }
+
 }
 
 resource "aws_iam_policy" "main" {

@@ -4,10 +4,28 @@ variable "codecommit_repos_pull" {
   default     = []
 }
 
+variable "codecommit_repos_push" {
+  type        = list(string)
+  description = "The ARNs of the AWS CodeCommit repos that can be pushed.  Use [\"*\"] to allow all repos."
+  default     = []
+}
+
 variable "description" {
   type        = string
   description = "The description of the AWS IAM policy.  Defaults to \"The policy for [NAME].\""
   default     = ""
+}
+
+variable "ecr_repos_read" {
+  type        = list(string)
+  description = "The ARNs of the AWS ECR repos that can be read from.  Use [\"*\"] to allow all repos."
+  default     = []
+}
+
+variable "ecr_repos_write" {
+  type        = list(string)
+  description = "The ARNs of the AWS ECR repos that can be written to.  Use [\"*\"] to allow all repos."
+  default     = []
 }
 
 variable "glue_tables_add" {
