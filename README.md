@@ -63,12 +63,16 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_athena_buckets_results"></a> [athena\_buckets\_results](#input\_athena\_buckets\_results) | The ARNs of the AWS S3 buckets the store the results of the Athena queries. Use ["*"] to allow all buckets. | `list(string)` | n/a | yes |
+| <a name="input_athena_buckets_source"></a> [athena\_buckets\_source](#input\_athena\_buckets\_source) | The ARNs of the AWS S3 buckets that store the data being queried through Athena. Use ["*"] to allow all buckets. | `list(string)` | n/a | yes |
+| <a name="input_athena_tables_exec"></a> [athena\_tables\_exec](#input\_athena\_tables\_exec) | A list of the Glue tables that can be read from during execution of Athena queries.  Use ["*"] to allow all tables. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
+| <a name="input_athena_workgroups_exec"></a> [athena\_workgroups\_exec](#input\_athena\_workgroups\_exec) | The ARNs of the AWS Athena workgroups that can be executed.  Use ["*"] to allow all workgroups. | `list(string)` | n/a | yes |
 | <a name="input_codecommit_repos_pull"></a> [codecommit\_repos\_pull](#input\_codecommit\_repos\_pull) | The ARNs of the AWS CodeCommit repos that can be pulled.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_codecommit_repos_push"></a> [codecommit\_repos\_push](#input\_codecommit\_repos\_push) | The ARNs of the AWS CodeCommit repos that can be pushed.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_description"></a> [description](#input\_description) | The description of the AWS IAM policy.  Defaults to "The policy for [NAME]." | `string` | `""` | no |
 | <a name="input_ecr_repos_read"></a> [ecr\_repos\_read](#input\_ecr\_repos\_read) | The ARNs of the AWS ECR repos that can be read from.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_ecr_repos_write"></a> [ecr\_repos\_write](#input\_ecr\_repos\_write) | The ARNs of the AWS ECR repos that can be written to.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
-| <a name="input_glue_tables_add"></a> [glue\_tables\_add](#input\_glue\_tables\_add) | List of glue tables that partitions can be added to. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
+| <a name="input_glue_tables_add"></a> [glue\_tables\_add](#input\_glue\_tables\_add) | List of Glue tables that partitions can be added to. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_kms_keys_decrypt"></a> [kms\_keys\_decrypt](#input\_kms\_keys\_decrypt) | The ARNs of the AWS KMS keys that can be used to decrypt data.  Use ["*"] to allow all keys. | `list(string)` | `[]` | no |
 | <a name="input_kms_keys_encrypt"></a> [kms\_keys\_encrypt](#input\_kms\_keys\_encrypt) | The ARNs of the AWS KMS keys that can be used to encrypt data.  Use ["*"] to allow all keys. | `list(string)` | `[]` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the AWS IAM policy. | `string` | n/a | yes |
