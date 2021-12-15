@@ -63,7 +63,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_athena_buckets_results"></a> [athena\_buckets\_results](#input\_athena\_buckets\_results) | The ARNs of the AWS S3 buckets the store the results of the Athena queries. Use ["*"] to allow all buckets. | `list(string)` | n/a | yes |
+| <a name="input_athena_buckets_results"></a> [athena\_buckets\_results](#input\_athena\_buckets\_results) | The ARNs of the AWS S3 buckets that store the results of Athena queries. Use ["*"] to allow all buckets. | `list(string)` | n/a | yes |
 | <a name="input_athena_buckets_source"></a> [athena\_buckets\_source](#input\_athena\_buckets\_source) | The ARNs of the AWS S3 buckets that store the data being queried through Athena. Use ["*"] to allow all buckets. | `list(string)` | n/a | yes |
 | <a name="input_athena_tables_exec"></a> [athena\_tables\_exec](#input\_athena\_tables\_exec) | A list of the Glue tables that can be read from during execution of Athena queries.  Use ["*"] to allow all tables. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_athena_workgroups_exec"></a> [athena\_workgroups\_exec](#input\_athena\_workgroups\_exec) | The ARNs of the AWS Athena workgroups that can be executed.  Use ["*"] to allow all workgroups. | `list(string)` | n/a | yes |
