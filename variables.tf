@@ -1,11 +1,13 @@
 variable "athena_buckets_source" {
   type        = list(string)
   description = "The ARNs of the AWS S3 buckets that store the data being queried through Athena. Use [\"*\"] to allow all buckets."
+  default     = []
 }
 
 variable "athena_buckets_results" {
   type        = list(string)
   description = "The ARNs of the AWS S3 buckets that store the results of Athena queries. Use [\"*\"] to allow all buckets."
+  default     = []
 }
 
 variable "athena_tables_exec" {
@@ -20,6 +22,7 @@ variable "athena_tables_exec" {
 variable "athena_workgroups_exec" {
   type        = list(string)
   description = "The ARNs of the AWS Athena workgroups that can be executed.  Use [\"*\"] to allow all workgroups."
+  default     = []
 }
 
 variable "codecommit_repos_pull" {
