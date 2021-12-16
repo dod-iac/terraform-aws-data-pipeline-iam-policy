@@ -1,3 +1,30 @@
+variable "athena_buckets_source" {
+  type        = list(string)
+  description = "The ARNs of the AWS S3 buckets that store the data being queried through Athena. Use [\"*\"] to allow all buckets."
+  default     = []
+}
+
+variable "athena_buckets_results" {
+  type        = list(string)
+  description = "The ARNs of the AWS S3 buckets that store the results of Athena queries. Use [\"*\"] to allow all buckets."
+  default     = []
+}
+
+variable "athena_tables_exec" {
+  type = list(object({
+    database = string
+    table    = string
+  }))
+  description = "A list of the Glue tables that can be read from during execution of Athena queries.  Use [\"*\"] to allow all tables."
+  default     = []
+}
+
+variable "athena_workgroups_exec" {
+  type        = list(string)
+  description = "The ARNs of the AWS Athena workgroups that can be executed.  Use [\"*\"] to allow all workgroups."
+  default     = []
+}
+
 variable "codecommit_repos_pull" {
   type        = list(string)
   description = "The ARNs of the AWS CodeCommit repos that can be pulled.  Use [\"*\"] to allow all repos."
@@ -33,7 +60,7 @@ variable "glue_tables_add" {
     database = string
     table    = string
   }))
-  description = "List of glue tables that partitions can be added to."
+  description = "List of Glue tables that partitions can be added to."
   default     = []
 }
 

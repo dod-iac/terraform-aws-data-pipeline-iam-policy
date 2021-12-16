@@ -42,7 +42,7 @@ data "aws_region" "current" {}
 data "aws_iam_policy_document" "main" {
 
   #
-  # DecryptObjects
+  # KMS / DecryptObjects
   #
 
   dynamic "statement" {
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # EncryptObjects
+  # KMS / EncryptObjects
   #
 
   dynamic "statement" {
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # ListBucket
+  # S3 / ListBucket
   #
 
   dynamic "statement" {
@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # GetObject
+  # S3 / GetObject
   #
 
   dynamic "statement" {
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # ListBucketMultipartUploads
+  # S3 / ListBucketMultipartUploads
   #
 
   dynamic "statement" {
@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # PutObject
+  # S3 / PutObject
   #
 
   dynamic "statement" {
@@ -154,7 +154,7 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # CreatePartition
+  # Glue / CreatePartition
   #
 
   dynamic "statement" {
@@ -196,7 +196,188 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
-  # GitPull
+  # Athena / GetTable
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_tables_exec) > 0 ? [1] : []
+    content {
+      sid = "GetTable"
+      actions = [
+        "glue:GetTable",
+        "glue:GetTables",
+        "glue:GetPartitions",
+        "glue:GetPartition"
+      ]
+      effect = "Allow"
+      resources = sort(flatten([
+        [
+          format("arn:%s:glue:%s:%s:catalog",
+            data.aws_partition.current.partition,
+            data.aws_region.current.name,
+            data.aws_caller_identity.current.account_id
+          )
+        ],
+        formatlist(
+          format("arn:%s:glue:%s:%s:database/%%s",
+            data.aws_partition.current.partition,
+            data.aws_region.current.name,
+            data.aws_caller_identity.current.account_id
+          ),
+          sort(distinct([for table in var.athena_tables_exec : table.database]))
+        ),
+        formatlist(
+          format("arn:%s:glue:%s:%s:table/%%s",
+            data.aws_partition.current.partition,
+            data.aws_region.current.name,
+            data.aws_caller_identity.current.account_id
+          ),
+          sort([for table in var.athena_tables_exec : format("%s/%s", table.database, table.table)])
+        )
+      ]))
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "aws:CalledVia"
+        values   = ["athena.amazonaws.com"]
+      }
+    }
+  }
+
+  #
+  # Athena / AthenaExecuteQuery
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_workgroups_exec) > 0 ? [1] : []
+    content {
+      sid = "AthenaExecuteQuery"
+      actions = [
+        # Submit Query and Retrieve Results
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:GetQueryResultsStream",
+        "athena:StartQueryExecution",
+        "athena:StopQueryExecution",
+        # List previous queries for the workgroup
+        "athena:ListQueryExecutions",
+        "athena:BatchGetQueryExecution", # used by History tab
+        # List saved queries
+        "athena:ListNamedQueries",
+        "athena:BatchGetNamedQuery", # used by Saved queries tab
+        "athena:GetNamedQuery",      # used by Saved queries tab
+        # Create a named query
+        "athena:CreateNamedQuery"
+      ]
+      effect    = "Allow"
+      resources = var.athena_workgroups_exec
+    }
+  }
+
+  #
+  # Athena / AthenaCheckBucket
+  #
+
+  dynamic "statement" {
+    for_each = length(distinct(flatten([var.athena_buckets_source, var.athena_buckets_results]))) > 0 ? [1] : []
+    content {
+      sid = "AthenaCheckBucket"
+      actions = [
+        "s3:GetBucketLocation",
+        "s3:GetBucketRequestPayment",
+        "s3:GetEncryptionConfiguration"
+      ]
+      effect    = "Allow"
+      resources = distinct(flatten([var.athena_buckets_source, var.athena_buckets_results]))
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "aws:CalledVia"
+        values   = ["athena.amazonaws.com"]
+      }
+    }
+  }
+
+  #
+  # Athena / AthenaListSourceBucket
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_buckets_source) > 0 ? [1] : []
+    content {
+      sid = "AthenaListSourceBucket"
+      actions = [
+        "s3:ListBucket",
+      ]
+      effect    = "Allow"
+      resources = var.athena_buckets_source
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "aws:CalledVia"
+        values   = ["athena.amazonaws.com"]
+      }
+    }
+  }
+
+  #
+  # Athena / AthenaGetObject
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_buckets_source) > 0 ? [1] : []
+    content {
+      sid = "AthenaGetObject"
+      actions = [
+        "s3:GetObject",
+      ]
+      effect    = "Allow"
+      resources = formatlist("%s/*", var.athena_buckets_source)
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "aws:CalledVia"
+        values   = ["athena.amazonaws.com"]
+      }
+    }
+  }
+
+  #
+  # Athena / AthenaPutResults
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_buckets_results) > 0 ? [1] : []
+    content {
+      sid = "AthenaPutResults"
+      actions = [
+        "s3:PutObject",
+        "s3:AbortMultipartUpload"
+      ]
+      effect    = "Allow"
+      resources = formatlist("%s/*", var.athena_buckets_results)
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "aws:CalledVia"
+        values   = ["athena.amazonaws.com"]
+      }
+    }
+  }
+
+  #
+  # Athena / AthenaGetResults
+  #
+
+  dynamic "statement" {
+    for_each = length(var.athena_buckets_results) > 0 ? [1] : []
+    content {
+      sid = "AthenaGetResults"
+      actions = [
+        "s3:GetObject",
+      ]
+      effect    = "Allow"
+      resources = formatlist("%s/*", var.athena_buckets_results)
+    }
+  }
+
+  #
+  # CodeCommit / GitPull
   #
 
   dynamic "statement" {
