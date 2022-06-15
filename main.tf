@@ -463,6 +463,125 @@ data "aws_iam_policy_document" "main" {
     }
   }
 
+  #
+  # CloudWatch / PutEvents
+  #
+
+  dynamic "statement" {
+    for_each = length(var.cloudwatch_log_groups_write) > 0 ? [1] : []
+    content {
+      sid = "CloudWatchPutEvents"
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = var.cloudwatch_log_groups_write
+    }
+  }
+
+  #
+  # SQS / GetQueueAttributes
+  #
+
+  dynamic "statement" {
+    for_each = length(distinct(flatten([var.sqs_queues_receive, var.sqs_queues_send]))) > 0 ? [1] : []
+    content {
+      sid = "GetQueueAttributes"
+      actions = [
+        "sqs:GetQueueAttributes"
+      ]
+      resources = distinct(flatten([var.sqs_queues_receive, var.sqs_queues_send]))
+    }
+  }
+
+  #
+  # SQS / Receive Message
+  #
+
+  dynamic "statement" {
+    for_each = length(var.sqs_queues_receive) > 0 ? [1] : []
+    content {
+      sid = "ReceiveMessage"
+      actions = [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage"
+      ]
+      resources = var.sqs_queues_receive
+    }
+  }
+
+  #
+  # SQS / Send Message
+  #
+
+  dynamic "statement" {
+    for_each = length(var.sqs_queues_send) > 0 ? [1] : []
+    content {
+      sid = "SendMessage"
+      actions = [
+        "sqs:SendMessage"
+      ]
+      resources = var.sqs_queues_send
+    }
+  }
+
+  #
+  # IAM / Pass Role
+  #
+
+  dynamic "statement" {
+    for_each = length(var.iam_roles_pass) > 0 ? [1] : []
+    content {
+      sid = "PassRole"
+      actions = [
+        "iam:PassRole"
+      ]
+      resources = var.iam_roles_pass
+    }
+  }
+
+  #
+  # ECS / Run Task
+  #
+
+  dynamic "statement" {
+    for_each = length(var.ecs_tasks_run) > 0 ? [1] : []
+    content {
+      sid = "RunTask"
+      actions = [
+        "ecs:RunTask"
+      ]
+      resources = contains(var.ecs_tasks_run[count.index].task_definitions, "*") ? ["*"] : var.ecs_tasks_run[count.index].task_definitions
+      dynamic "condition" {
+        for_each = contains(var.ecs_tasks_run[count.index].ecs_clusters, "*") ? [] : [1]
+        content {
+          test     = "ArnEquals"
+          variable = "ecs:Cluster"
+          values   = var.ecs_tasks_run[count.index].ecs_clusters
+        }
+      }
+    }
+  }
+
+  #
+  # EC2 / Manage Network Interfaces
+  #
+
+  dynamic "statement" {
+    for_each = var.ec2_networkinterfaces_manage ? [1] : []
+    content {
+      sid = "ManageNetworkInterface"
+      actions = [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ]
+      resources = ["*"]
+    }
+  }
+
 }
 
 resource "aws_iam_policy" "main" {

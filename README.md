@@ -67,17 +67,23 @@ No modules.
 | <a name="input_athena_buckets_source"></a> [athena\_buckets\_source](#input\_athena\_buckets\_source) | The ARNs of the AWS S3 buckets that store the data being queried through Athena. Use ["*"] to allow all buckets. | `list(string)` | `[]` | no |
 | <a name="input_athena_tables_exec"></a> [athena\_tables\_exec](#input\_athena\_tables\_exec) | A list of the Glue tables that can be read from during execution of Athena queries.  Use ["*"] to allow all tables. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_athena_workgroups_exec"></a> [athena\_workgroups\_exec](#input\_athena\_workgroups\_exec) | The ARNs of the AWS Athena workgroups that can be executed.  Use ["*"] to allow all workgroups. | `list(string)` | `[]` | no |
+| <a name="input_cloudwatch_log_groups_write"></a> [cloudwatch\_log\_groups\_write](#input\_cloudwatch\_log\_groups\_write) | The ARNs of the AWS CloudWatch log groups that events can be written into.  Use ["*"] to allow all log groups. | `list(string)` | `[]` | no |
 | <a name="input_codecommit_repos_pull"></a> [codecommit\_repos\_pull](#input\_codecommit\_repos\_pull) | The ARNs of the AWS CodeCommit repos that can be pulled.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_codecommit_repos_push"></a> [codecommit\_repos\_push](#input\_codecommit\_repos\_push) | The ARNs of the AWS CodeCommit repos that can be pushed.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_description"></a> [description](#input\_description) | The description of the AWS IAM policy.  Defaults to "The policy for [NAME]." | `string` | `""` | no |
+| <a name="input_ec2_networkinterfaces_manage"></a> [ec2\_networkinterfaces\_manage](#input\_ec2\_networkinterfaces\_manage) | Allows creating, deleting, and attaching network interfaces. | `bool` | `false` | no |
 | <a name="input_ecr_repos_read"></a> [ecr\_repos\_read](#input\_ecr\_repos\_read) | The ARNs of the AWS ECR repos that can be read from.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
 | <a name="input_ecr_repos_write"></a> [ecr\_repos\_write](#input\_ecr\_repos\_write) | The ARNs of the AWS ECR repos that can be written to.  Use ["*"] to allow all repos. | `list(string)` | `[]` | no |
+| <a name="input_ecs_tasks_run"></a> [ecs\_tasks\_run](#input\_ecs\_tasks\_run) | The list of ARNs for ECS task definitions and the ECS clusters where they can be run.  Either clusters or task\_definitions can be set to ["*"] to allow all. | <pre>list(object({<br>    clusters         = list(string)<br>    task_definitions = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_glue_tables_add"></a> [glue\_tables\_add](#input\_glue\_tables\_add) | List of Glue tables that partitions can be added to. | <pre>list(object({<br>    database = string<br>    table    = string<br>  }))</pre> | `[]` | no |
+| <a name="input_iam_roles_pass"></a> [iam\_roles\_pass](#input\_iam\_roles\_pass) | The ARNs of the IAM roles that can be passed.  Use ["*"] to allow all roles to be passed. | `list(string)` | `[]` | no |
 | <a name="input_kms_keys_decrypt"></a> [kms\_keys\_decrypt](#input\_kms\_keys\_decrypt) | The ARNs of the AWS KMS keys that can be used to decrypt data.  Use ["*"] to allow all keys. | `list(string)` | `[]` | no |
 | <a name="input_kms_keys_encrypt"></a> [kms\_keys\_encrypt](#input\_kms\_keys\_encrypt) | The ARNs of the AWS KMS keys that can be used to encrypt data.  Use ["*"] to allow all keys. | `list(string)` | `[]` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the AWS IAM policy. | `string` | n/a | yes |
 | <a name="input_s3_buckets_read"></a> [s3\_buckets\_read](#input\_s3\_buckets\_read) | The ARNs of the AWS S3 buckets that can be read from.  Use ["*"] to allow all buckets. | `list(string)` | `[]` | no |
 | <a name="input_s3_buckets_write"></a> [s3\_buckets\_write](#input\_s3\_buckets\_write) | The ARNs of the AWS S3 buckets that can be written to.  Use ["*"] to allow all buckets. | `list(string)` | `[]` | no |
+| <a name="input_sqs_queues_receive"></a> [sqs\_queues\_receive](#input\_sqs\_queues\_receive) | The ARNs of the AWS SQS queues that messages can be received from.  Also grants the permission to delete messages.  Use ["*"] to allow all queues. | `list(string)` | `[]` | no |
+| <a name="input_sqs_queues_send"></a> [sqs\_queues\_send](#input\_sqs\_queues\_send) | The ARNs of the AWS S3 queues that messages can be sent to.  Use ["*"] to allow all queues. | `list(string)` | `[]` | no |
 
 ## Outputs
 
